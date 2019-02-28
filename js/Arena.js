@@ -58,8 +58,10 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
                 -texture procedurale (feu, nuage...)
     */
     var myMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
-    myMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1);
-    myMaterial.diffuseTexture = new BABYLON.Texture("assets/image/rugueux.jpg", scene);
+    myMaterial.diffuseColor = new BABYLON.Color3(0.57, 0.43, 0.85);
+    /*myMaterial.diffuseTexture = new BABYLON.Texture("assets/image/cloud.png", scene);
+    myMaterial.diffuseTexture.uScale = 1.0;
+    myMaterial.diffuseTexture.vScale = 1.0;*/
 
     var materialGround = new BABYLON.StandardMaterial("groundTexture", scene);
     materialGround.diffuseTexture = new BABYLON.Texture("assets/images/grass.jpg", scene);
@@ -67,11 +69,14 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
     materialGround.diffuseTexture.vScale = 4.0;
 
     var myMultiMaterial = new BABYLON.StandardMaterial("myMultiMaterial", scene);
-    myMultiMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1);
-    myMultiMaterial.alpha = 0.5;
-    myMultiMaterial.diffuseTexture = new BABYLON.Texture("assets/image/rugueux.jpg", scene);
-    myMultiMaterial.specularTexture = new BABYLON.Texture("assets/image/cuir.jpg", scene);
-    myMultiMaterial.emissiveTexture = new BABYLON.Texture("assets/image/nuage.jpg", scene);
+    myMultiMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0.5);
+    myMultiMaterial.specularColor = new BABYLON.Color3(0.1, 0.6, 0.87);
+    myMultiMaterial.emissiveColor = new BABYLON.Color3(1, 0,0);
+    myMultiMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
+    myMultiMaterial.alpha = 1.0;
+    //myMultiMaterial.diffuseTexture = new BABYLON.Texture("assets/image/cuir.jpg", scene);
+    //myMultiMaterial.specularTexture = new BABYLON.Texture("assets/image/rugueux.jpg", scene);
+    //myMultiMaterial.emissiveTexture = new BABYLON.Texture("assets/image/nuage.jpg", scene);*/
     
 
 
@@ -87,15 +92,24 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
     
     var box = BABYLON.Mesh.CreateBox("box1", 1, scene);// box
     box.position.y = 2;
+    box.material = myMaterial;
+    this.game.scene.box = box;
 
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 32, 1, scene);//sphere
     sphere.position.y = 1;
     sphere.position.z = 1;
-    sphere.material = myMaterial;
+    this.game.scene.sphere = sphere;
 
     var cone = BABYLON.MeshBuilder.CreateCylinder("cone", { diameterTop: 0, tessellation: 4 }, scene);
+    cone.position.y = 2;
+    cone.position.x = -2;
+    cone.position.z = -2;
 
     var torus = BABYLON.MeshBuilder.CreateTorus("torus", { thickness: 0.2 }, scene);
+    torus.position.x = 1;
+    torus.position.y = 2;
+    torus.position.z = 2;
+    torus.material = myMultiMaterial;
 
     var ground = BABYLON.Mesh.CreateGround("ground1", 20, 20, 2, scene);
     //ground.scaling = new BABYLON.Vector3(2, 10, 3);
@@ -130,14 +144,93 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
 
     skyBox.material = skyBoxMaterial; 
 
+    //PLATEFORMES
+    /*
+    var plateforme1 = BABYLON.Mesh.CreateBox("plateforme", 2, scene);
+    plateforme1.scaling.y = 0.2
+    // plateforme1.material = scene.materialPlatform1;
+    plateforme1.position.y = 10;
+    plateforme1.position.x = 10;
+    plateforme1.checkCollisions = true;*/
+
+    var animationBox = new BABYLON.Animation("AnimBox", "scaling.x", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var boxKeys = [];
+    boxKeys.push({
+        frame: 0,
+        value: 1
+    });
+    boxKeys.push({
+        frame: 50,
+        value: 0.2
+    });
+    boxKeys.push({
+        frame: 100,
+        value: 1
+    });
+    animationBox.setKeys(boxKeys);
+    box.animations = [];
+    box.animations.push(animationBox);
+    scene.beginAnimation(box, 0, 1000, true);
+
+    //rotation
+    var animationBall = new BABYLON.Animation("AnimBall", "rotation.x", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+    var ballKeys = [];
+
+    ballKeys.push({
+        frame: 0,
+        value: 0
+    });
+
+    ballKeys.push({
+        frame: 30,
+        value: Math.PI
+    });
+
+    ballKeys.push({
+        frame: 60,
+        value: 2 * Math.PI
+    });
+
+    animationBall.setKeys(ballKeys);
+    sphere.animations = [];
+    sphere.animations.push(animationBall);
+    scene.beginAnimation(sphere, 0, 1000, true);
+
+    //translation
+    var ballSlide = new BABYLON.Animation("xSlide", "position.z", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+    var keySlide = [];
+
+    keySlide.push({
+        frame: 0,
+        value: 5
+    });
+
+    keySlide.push({
+        frame: 50,
+        value: -5
+    });
+
+    keySlide.push({
+        frame: 100,
+        value: 5
+    });
+    ballSlide.setKeys(keySlide);
+    sphere.animations.push(ballSlide);
+    scene.beginAnimation(sphere, 0, 1000, true);
 };
 
 Arena.prototype={
+
 
     //ANIMATION
     _animateWorld : function(ratioFps)
     {
       // Animation des plateformes (translation, rotation, redimensionnement ...)
       /*TODO*/
+        // cf animations dans la fonction ci-dessus
+       
     },
 }
+

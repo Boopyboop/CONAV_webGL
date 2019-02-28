@@ -17,32 +17,65 @@ Player = function(game, canvas) //On définit l'objet Player dans lequel on va p
 
   //Quand les touches de déplacement sont relachées, on met les axes de déplacement de la caméra à faux
   
-  /* //à décommenter
-  window.addEventListener( //TODO , function(evt) 
-  {
-    //TODO
-  }, false);
-  */
+   //à décommenter
+  window.addEventListener( "touchedown" , function(evt) 
+       {
+      switch (evt.keyCode) {
+          case 90:
+              _this.camera.axisMovement[0] = true;
+              break;
+          case 83:
+              _this.camera.axisMovement[1] = true;
+              break;
+          case 81:
+              _this.camera.axisMovement[2] = true;
+              break;
+          case 68:
+              _this.camera.axisMovement[3] = true;
+              break;}
+            }, false);
+  
     
   // Quand les touches sont appuyées, on met les axes à vrai
 
-  /* //à décommenter
-  window.addEventListener( //TODO , function(evt) 
-  {
-    //TODO
-  }, false);
-  */
+  //à décommenter
+  window.addEventListener( "toucheup" , function(evt) 
+        {
+        //TODO
+          switch(evt.keyCode) {
+          case 90:
+          _this.camera.axisMovement[0] = false;
+          break;
+          case 83:
+          _this.camera.axisMovement[1] = false;
+          break;
+          case 81:
+          _this.camera.axisMovement[2] = false;
+          break;
+          case 68:
+          _this.camera.axisMovement[3] = false;
+          break;}
+         }, false);
+  
 
   // Quand la souris bouge dans la scène
-  /*//à décommenter
-  window.addEventListener(//TODO , function(evt) 
+  //à décommenter
+  window.addEventListener( "souris_bouge" , function(evt) 
   {
-    if(_this.rotEngaged === true) //si notre souris est bien capturée dans notre scène
-    {
-      //TODO
-    }
+      if (_this.rotEngaged === true) //si notre souris est bien capturée dans notre scène
+      {
+          //TODO
+          _this.camera.playerBox.rotation.y += evt.movementX * 0.001 * (_this.angularSensibility / 250);
+
+          var nextRotationX = _this.camera.playerBox.rotation.x + (evt.movementY * 0.001 * (_this.angularSensibility / 250));
+
+          if (nextRotationX < degToRad(90) && nextRotationX > degToRad(-90))
+          {
+              _this.camera.playerBox.rotation.x += evt.movementY * 0.001 * (_this.angularSensibility / 250);
+          }
+      }
   }, false);
-*/
+
 
   // On récupère le canvas de la scène 
   var canvas = this.game.scene.getEngine().getRenderingCanvas();
@@ -98,7 +131,7 @@ Player.prototype = {
     this.camera.setTarget(BABYLON.Vector3.Zero());
 
     // On affecte le mouvement de la caméra au canvas //à supprimer quand vous vous y mettez
-    this.camera.attachControl(canvas, true);//à supprimer quand vous vous y mettez
+    this.camera.attachControl(canvas, false);//à supprimer quand vous vous y mettez
 
     // On initialise les axes de mouvement de la caméra à nul
     this.camera.axisMovement = [false,false,false,false];//dans l'ordre [haut,bas,gauche,droite]
@@ -166,11 +199,50 @@ Player.prototype = {
     //nous créons une vitesse relative qui va dépendre des performances de l'ordinateur pour ne pas altérer le gameplay en fonction de la machine
     var relativeSpeed = this.speed / ratioFps;
 
-    /*
+
+    
     
     //TODO : Déplacer notre personnage sur les 4 axes
-    
+      if (this.camera.axisMovement[0])
+      {
+          forward = new BABYLON.Vector3(
+              parseFloat(Math.sin(parseFloat(this.camera.playerBox.rotation.y))) * relativeSpeed,
+              0,
+              parseFloat(Math.cos(parseFloat(this.camera.playerBox.rotation.y))) * relativeSpeed
+          );
+          this.camera.playerBox.moveWithCollisions(forward);
+      }
 
+      if (this.camera.axisMovement[1])
+      {
+          backward = new BABYLON.Vector3(
+              parseFloat(-Math.sin(parseFloat(this.camera.playerBox.rotation.y))) * relativeSpeed,
+              0,
+              parseFloat(-Math.cos(parseFloat(this.camera.playerBox.rotation.y))) * relativeSpeed
+          );
+          this.camera.playerBox.moveWithCollisions(backward);
+      }
+
+      if (this.camera.axisMovement[2])
+      {
+          left = new BABYLON.Vector3(
+              parseFloat(Math.sin(parseFloat(this.camera.playerBox.rotation.y) + degToRad(-90))) * relativeSpeed,
+              0,
+              parseFloat(Math.cos(parseFloat(this.camera.playerBox.rotation.y) + degToRad(-90))) * relativeSpeed
+          );
+          this.camera.playerBox.moveWithCollisions(left);
+      }
+
+      if (this.camera.axisMovement[3])
+      {
+          right = new BABYLON.Vector3(
+              parseFloat(-Math.sin(parseFloat(this.camera.playerBox.rotation.y) + degToRad(-90))) * relativeSpeed,
+              0,
+              parseFloat(-Math.cos(parseFloat(this.camera.playerBox.rotation.y) + degToRad(-90))) * relativeSpeed
+          );
+          this.camera.playerBox.moveWithCollisions(right);
+      }
+/*
     if(this.camera.jumpNeed) //on monte
     {
 		//TODO
