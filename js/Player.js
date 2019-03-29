@@ -1,11 +1,14 @@
-Player = function(game, canvas) //On définit l'objet Player dans lequel on va pouvoir faire appel à ses méthodes définies dans son prototype
+Player = function(game, canvas, scene) //On définit l'objet Player dans lequel on va pouvoir faire appel à ses méthodes définies dans son prototype
 //ainsi que des fonctions extérieures à Player
 {
   // _this est l'accès à la caméra à l'interieur de Player
   var _this = this;
-
+   
   // Le jeu, chargé dans l'objet Player
-  this.game = game;
+
+  //this.scene = scene;
+    this.game = game;
+    this.scene = scene;
 
   //On définit la vitesse de notre personnage
   this.speed = 1;
@@ -76,6 +79,34 @@ Player = function(game, canvas) //On définit l'objet Player dans lequel on va p
       }
   }, false);
 
+
+ window.addEventListener("keyup", function (evt) {
+        var sceneJump = _this.scene;
+        if (evt.keyCode == 32) {
+            _this.camera.animations = [];
+            var a = new BABYLON.Animation("a", "position.y", 20, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+            // Animation keys              		
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: _this.camera.position.y
+            });
+            keys.push({
+                frame: 8,
+                value: _this.camera.position.y + 8
+            });
+            keys.push({
+                frame: 16,
+                value: _this.camera.position.y
+            });
+            a.setKeys(keys);
+            var easingFunction = new BABYLON.CircleEase();
+            easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+            a.setEasingFunction(easingFunction);
+            _this.camera.animations.push(a);
+            sceneJump.beginAnimation(_this.camera, 0, 20, false);
+        }
+    }, false);
 
   // On récupère le canvas de la scène 
   var canvas = this.game.scene.getEngine().getRenderingCanvas();

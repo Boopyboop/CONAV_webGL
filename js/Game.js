@@ -14,6 +14,7 @@ Game = function(canvasId)
     var canvas = document.getElementById(canvasId);
     var engine = new BABYLON.Engine(canvas, true);
     this.engine = engine;
+    
 
     // on crée la variable _this pour utiliser notre objet dans notre boucle de rendu
     // et dans notre addEventListener, bref les méthodes d'objets n'appartenant pas à Game
@@ -23,7 +24,7 @@ Game = function(canvasId)
     this.scene = this._initScene(engine);
 
     //On crée nos objets player et arena
-    var _player = new Player(this, canvas); //this est l'objet Game
+    var _player = new Player(this, canvas, this.scene); //this est l'objet Game
     var _arena = new Arena(this);
 
     /* à décommenter si vous êtes dans Weapon.js
@@ -80,6 +81,8 @@ Game.prototype = { //On définit les méthodes de notre objet dans son prototype
         scene.clearColor = new BABYLON.Color3(0, 0, 0);
         //On autorise les collisions dans notre scène
         /*TODO*/
+        scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
+        scene.collisionsEnabled = true;
         //On renvoie la scène créée
         return scene;
     }

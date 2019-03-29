@@ -68,15 +68,21 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
     materialGround.diffuseTexture.uScale = 4.0;
     materialGround.diffuseTexture.vScale = 4.0;
 
-    var myMultiMaterial = new BABYLON.StandardMaterial("myMultiMaterial", scene);
-    myMultiMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0.5);
-    myMultiMaterial.specularColor = new BABYLON.Color3(0.1, 0.6, 0.87);
-    myMultiMaterial.emissiveColor = new BABYLON.Color3(1, 0,0);
-    myMultiMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
-    myMultiMaterial.alpha = 1.0;
-    //myMultiMaterial.diffuseTexture = new BABYLON.Texture("assets/image/cuir.jpg", scene);
-    //myMultiMaterial.specularTexture = new BABYLON.Texture("assets/image/rugueux.jpg", scene);
-    //myMultiMaterial.emissiveTexture = new BABYLON.Texture("assets/image/nuage.jpg", scene);*/
+    var materialBriques = new BABYLON.StandardMaterial("briquesTexture", scene);
+    materialBriques.diffuseTexture = new BABYLON.Texture("assets/images/shiny.jpg", scene);
+    materialBriques.diffuseTexture.uScale = 4.0;
+    materialBriques.diffuseTexture.vScale = 4.0;
+
+    var videoMaterial = new BABYLON.StandardMaterial("¨videoTexture", scene);
+    //videoMaterial.diffuseTexture = new BABYLON.Texture("assets/images/shiny.jpg", scene);
+    videoMaterial.diffuseTexture = new BABYLON.VideoTexture("video", "assets/sounds/video.mp4", scene, true);
+    //box.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    videoMaterial.diffuseTexture.uScale = 4.0;
+    videoMaterial.diffuseTexture.vScale = 4.0;
+
+    var myMultiMaterial = new BABYLON.MultiMaterial("multi", scene);
+    myMultiMaterial.subMaterials.push(materialGround);
+    myMultiMaterial.subMaterials.push(materialBriques);
     
 
 
@@ -92,28 +98,37 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
     
     var box = BABYLON.Mesh.CreateBox("box1", 1, scene);// box
     box.position.y = 2;
-    box.material = myMaterial;
+    box.checkCollisions = true;
+    //box.material = myMaterial;
     this.game.scene.box = box;
+    //box.material.diffuseTexture = new BABYLON.VideoTexture("video", "assets/sounds/video.mp4", scene, true);
+    //box.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+
 
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 32, 1, scene);//sphere
     sphere.position.y = 1;
     sphere.position.z = 1;
+    sphere.checkCollisions = true;
     this.game.scene.sphere = sphere;
 
     var cone = BABYLON.MeshBuilder.CreateCylinder("cone", { diameterTop: 0, tessellation: 4 }, scene);
     cone.position.y = 2;
     cone.position.x = -2;
     cone.position.z = -2;
+    cone.checkCollisions = true;
+    cone.material = myMaterial;
 
     var torus = BABYLON.MeshBuilder.CreateTorus("torus", { thickness: 0.2 }, scene);
     torus.position.x = 1;
     torus.position.y = 2;
     torus.position.z = 2;
+    torus.checkCollisions = true;
     torus.material = myMultiMaterial;
 
     var ground = BABYLON.Mesh.CreateGround("ground1", 20, 20, 2, scene);
     //ground.scaling = new BABYLON.Vector3(2, 10, 3);
     ground.material = materialGround;
+    ground.checkCollisions = true;
 
 
     //AUDIO
@@ -124,7 +139,8 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
     var volume = 0.1;
     var volume2 = 0.1;
     var music = new BABYLON.Sound("Rain", "assets/sounds/music.mp3", scene, null, { loop: true, autoplay: true , volume });
-    var boxSound = new BABYLON.Sound("boxSound", "assets/sounds/rain.mp3", scene, null, { loop: true, autoplay: true, volume2 });
+    var boxSound = new BABYLON.Sound("boxSound", "assets/sounds/rain.wav", this.game.scene);
+    this.boxSound = boxSound;
     boxSound.attachToMesh(box);
 
     //SKYBOX
@@ -143,6 +159,8 @@ Arena = function(game) //on créée notre objet Arena qui prend l'objet game en 
     skyBoxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
 
     skyBox.material = skyBoxMaterial; 
+    skyBox.infiniteDistance = true;
+    skyBoxMaterial.disableLighting = true;
 
     //PLATEFORMES
     /*
@@ -229,6 +247,12 @@ Arena.prototype={
     {
       // Animation des plateformes (translation, rotation, redimensionnement ...)
       /*TODO*/
+        /*if(norm(diff(this.Player.camera.playerBox.position,ref))<10  && this.doorsOpened == false){
+            this.game.scene.beginAnimation(this.door1, 0,50, true);
+            this.game.scene.beginAnimation(this.door2, 0,50, true);
+            this.sonPorte.play();
+            this.doorsOpened = true;
+        }*/
         // cf animations dans la fonction ci-dessus
        
     },
